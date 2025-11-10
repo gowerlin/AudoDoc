@@ -301,7 +301,7 @@ jobs:
       - name: Create backend archive
         run: |
           cd desktop/backend-bundle
-          tar -czf backend-bundle.tar.gz *
+          tar -czf backend-bundle.tar.gz backend-*
 
       - name: Upload backend bundle
         uses: softprops/action-gh-release@v2
