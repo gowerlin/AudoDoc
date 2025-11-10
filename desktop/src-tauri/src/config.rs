@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use anyhow::Result;
 
 // ============= 配置結構定義 =============
@@ -120,6 +120,73 @@ impl Default for AppConfig {
     }
 }
 
+// ============= Path Validation =============
+
+/// Validate that a path is within allowed directories
+fn validate_path(path: &Path) -> Result<PathBuf, String> {
+    // Get allowed base directories
+    let allowed_bases = vec![
+        dirs::document_dir(),
+        dirs::data_dir(),
+        dirs::config_dir(),
+        dirs::home_dir(),
+    ];
+
+    // Canonicalize the path (this also checks if parent directories exist)
+    let canonical = path.canonicalize().or_else(|_| {
+        // If path doesn't exist, try to canonicalize parent and append filename
+        if let Some(parent) = path.parent() {
+            if let Some(filename) = path.file_name() {
+                parent
+                    .canonicalize()
+                    .map(|p| p.join(filename))
+                    .map_err(|e| format!("路徑驗證失敗: {}", e))
+            } else {
+                Err("無效的路徑".to_string())
+            }
+        } else {
+            Err("無效的路徑".to_string())
+        }
+    })?;
+
+    // Check if the path is within any allowed base directory
+    let is_allowed = allowed_bases.iter().any(|base| {
+        if let Some(base_path) = base {
+            canonical.starts_with(base_path)
+        } else {
+            false
+        }
+    });
+
+    if !is_allowed {
+        return Err(format!(
+            "路徑必須在用戶目錄內: {}",
+            canonical.display()
+        ));
+    }
+
+    Ok(canonical)
+}
+
+/// Validate all paths in storage settings
+fn validate_storage_paths(storage: &StorageSettings) -> Result<(), String> {
+    validate_path(&storage.snapshot_storage_path)?;
+    validate_path(&storage.screenshot_storage_path)?;
+    validate_path(&storage.database_path)?;
+    Ok(())
+}
+
+/// Validate optional paths in auth settings
+fn validate_auth_paths(auth: &AuthSettings) -> Result<(), String> {
+    if let Some(ref path) = auth.google_credentials_path {
+        validate_path(path)?;
+    }
+    if let Some(ref path) = auth.google_token_path {
+        validate_path(path)?;
+    }
+    Ok(())
+}
+
 // ============= Tauri Commands =============
 
 #[tauri::command]
@@ -130,6 +197,10 @@ pub fn load_config() -> Result<AppConfig, String> {
 
 #[tauri::command]
 pub fn save_config(config: AppConfig) -> Result<(), String> {
+    // Validate all paths before saving
+    validate_storage_paths(&config.storage)?;
+    validate_auth_paths(&config.auth)?;
+
     confy::store("autodoc-agent", "config", config)
         .map_err(|e| format!("保存配置失敗: {}", e))
 }
@@ -154,10 +225,26 @@ pub fn validate_config(config: AppConfig) -> Result<Vec<String>, String> {
         errors.push("最大頁面數必須在 10-1000 之間".to_string());
     }
 
-    // 驗證儲存路徑
-    if !config.storage.snapshot_storage_path.exists() {
-        std::fs::create_dir_all(&config.storage.snapshot_storage_path)
-            .map_err(|e| format!("無法建立快照目錄: {}", e))?;
+    // 驗證儲存路徑（防止路徑穿越）
+    if let Err(e) = validate_storage_paths(&config.storage) {
+        errors.push(format!("儲存路徑驗證失敗: {}", e));
+    }
+
+    // 驗證認證路徑
+    if let Err(e) = validate_auth_paths(&config.auth) {
+        errors.push(format!("認證路徑驗證失敗: {}", e));
+    }
+
+    // 創建目錄（僅在路徑驗證通過後）
+    if errors.is_empty() {
+        // Safely create directories only after validation
+        let validated_snapshot_path = validate_path(&config.storage.snapshot_storage_path)
+            .map_err(|e| format!("快照路徑驗證失敗: {}", e))?;
+
+        if !validated_snapshot_path.exists() {
+            std::fs::create_dir_all(&validated_snapshot_path)
+                .map_err(|e| format!("無法建立快照目錄: {}", e))?;
+        }
     }
 
     if errors.is_empty() {
