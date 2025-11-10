@@ -17,8 +17,8 @@
     "fs:allow-create",
     "fs:allow-mkdir",
     "fs:allow-exists",
-    "fs:scope-app-data",
-    "fs:scope-app-config",
+    "fs:scope-appdata",
+    "fs:scope-appconfig",
     "shell:default",
     "shell:allow-execute",
     "shell:allow-open"
