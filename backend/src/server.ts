@@ -5,7 +5,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import { createServer } from 'http';
 import { IncomingMessage } from 'http';
 import jwt from 'jsonwebtoken';
@@ -192,14 +192,14 @@ server.on('upgrade', (request, socket, head) => {
 });
 
 // WebSocket connection handling (after authentication)
-wss.on('connection', (ws, req, clientId: string) => {
+wss.on('connection', (ws: WebSocket, req: IncomingMessage, clientId: string) => {
   logger.info('WebSocket client connected', {
     ip: req.socket.remoteAddress,
     clientId
   });
 
   // Message handler with rate limiting
-  ws.on('message', (message) => {
+  ws.on('message', (message: Buffer | ArrayBuffer | Buffer[]) => {
     try {
       // Check rate limit
       if (!checkWsRateLimit(clientId)) {
@@ -230,7 +230,7 @@ wss.on('connection', (ws, req, clientId: string) => {
     wsRateLimiter.delete(clientId);
   });
 
-  ws.on('error', (error) => {
+  ws.on('error', (error: Error) => {
     logger.error('WebSocket error', { error, clientId });
   });
 

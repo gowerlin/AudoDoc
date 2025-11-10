@@ -59,9 +59,7 @@ export const InteractionPanel: React.FC = () => {
       // Configure marked for security
       marked.setOptions({
         breaks: true,
-        gfm: true,
-        headerIds: false,
-        mangle: false
+        gfm: true
       });
 
       // Sanitize HTML to prevent XSS attacks
