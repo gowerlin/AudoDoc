@@ -3,6 +3,7 @@
 
 mod config;
 mod sidecar;
+mod secure_storage;
 mod tray;
 mod updater;
 
@@ -36,11 +37,9 @@ fn main() {
                 }
             }
 
-            // 自動啟動後端
-            let backend_state = app.state::<sidecar::BackendProcess>();
-            if let Err(e) = backend_state.start(3000) {
-                log::warn!("無法啟動後端: {}. 將在稍後重試.", e);
-            }
+            // Note: Backend is now started manually via the UI to ensure proper path resolution
+            // The backend requires AppHandle for path resolution, which is not available here
+            info!("Backend will be started on demand via UI")
 
             Ok(())
         })
@@ -53,6 +52,11 @@ fn main() {
             config::validate_config,
             config::get_default_config,
             config::reset_config,
+            // Secure storage commands
+            secure_storage::store_secure_credential,
+            secure_storage::get_secure_credential,
+            secure_storage::delete_secure_credential,
+            secure_storage::has_secure_credential,
             // Sidecar commands
             sidecar::start_backend,
             sidecar::stop_backend,

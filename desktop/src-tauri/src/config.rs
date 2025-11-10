@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use anyhow::Result;
+use crate::secure_storage;
 
 // ============= 配置結構定義 =============
 
@@ -24,6 +25,9 @@ pub struct BasicSettings {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AuthSettings {
+    // Note: claude_api_key and target_password are stored securely in OS keychain
+    // These fields are only used temporarily and not persisted to config file
+    #[serde(skip)]
     pub claude_api_key: String,
     pub claude_model: String,
     pub google_credentials_path: Option<PathBuf>,
@@ -32,6 +36,7 @@ pub struct AuthSettings {
     pub chrome_mcp_port: u16,
     pub target_auth_type: String,
     pub target_username: Option<String>,
+    #[serde(skip)]
     pub target_password: Option<String>,
 }
 
@@ -191,8 +196,19 @@ fn validate_auth_paths(auth: &AuthSettings) -> Result<(), String> {
 
 #[tauri::command]
 pub fn load_config() -> Result<AppConfig, String> {
-    confy::load("autodoc-agent", "config")
-        .map_err(|e| format!("載入配置失敗: {}", e))
+    let mut config: AppConfig = confy::load("autodoc-agent", "config")
+        .map_err(|e| format!("載入配置失敗: {}", e))?;
+
+    // Load sensitive credentials from OS keychain
+    if let Ok(api_key) = secure_storage::get_credential("claude_api_key") {
+        config.auth.claude_api_key = api_key;
+    }
+
+    if let Ok(password) = secure_storage::get_credential("target_password") {
+        config.auth.target_password = Some(password);
+    }
+
+    Ok(config)
 }
 
 #[tauri::command]
@@ -201,7 +217,23 @@ pub fn save_config(config: AppConfig) -> Result<(), String> {
     validate_storage_paths(&config.storage)?;
     validate_auth_paths(&config.auth)?;
 
-    confy::store("autodoc-agent", "config", config)
+    // Store sensitive credentials in OS keychain (not in config file)
+    if !config.auth.claude_api_key.is_empty() {
+        secure_storage::store_credential("claude_api_key", &config.auth.claude_api_key)?;
+    }
+
+    if let Some(ref password) = config.auth.target_password {
+        if !password.is_empty() {
+            secure_storage::store_credential("target_password", password)?;
+        }
+    }
+
+    // Create a copy without sensitive data for file storage
+    let mut config_to_save = config.clone();
+    config_to_save.auth.claude_api_key = String::new();
+    config_to_save.auth.target_password = None;
+
+    confy::store("autodoc-agent", "config", config_to_save)
         .map_err(|e| format!("保存配置失敗: {}", e))
 }
 
