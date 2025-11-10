@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "AutoDoc Agent - AI-powered User Manual Generator",
   "main": "dist/index.js",
+  "bin": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
