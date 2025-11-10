@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Form, Input, Select, Button, Space, message, FormInstance } from "antd";
 import { EyeOutlined, EyeInvisibleOutlined, CheckCircleOutlined } from "@ant-design/icons";
-import { open } from "@tauri-apps/api/dialog";
-import { invoke } from "@tauri-apps/api/tauri";
+import { open } from "@tauri-apps/plugin-dialog";
 
 interface AuthSettingsTabProps {
   form: FormInstance;

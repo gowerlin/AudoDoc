@@ -1,5 +1,5 @@
 import { Form, Input, Switch, Slider, Button, FormInstance } from "antd";
-import { open } from "@tauri-apps/api/dialog";
+import { open } from "@tauri-apps/plugin-dialog";
 
 interface StorageSettingsTabProps {
   form: FormInstance;

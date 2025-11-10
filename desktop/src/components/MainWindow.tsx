@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
-import { Button, Card, Input, Select, Slider, Progress, message } from "antd";
+import { invoke } from "@tauri-apps/api/core";
+import { Button, Card, Input, Select, Slider, message } from "antd";
 import { SettingOutlined, PlayCircleOutlined } from "@ant-design/icons";
 
 interface MainWindowProps {

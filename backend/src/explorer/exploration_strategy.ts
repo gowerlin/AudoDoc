@@ -32,11 +32,11 @@ export class ExplorationStrategy {
 
   constructor(config: ExplorationConfig) {
     this.config = {
-      maxDepth: 3,
-      maxPages: 100,
-      priorityKeywords: ['settings', 'config', 'admin', 'manage', 'dashboard'],
-      excludePatterns: [],
       ...config,
+      maxDepth: config.maxDepth ?? 3,
+      maxPages: config.maxPages ?? 100,
+      priorityKeywords: config.priorityKeywords ?? ['settings', 'config', 'admin', 'manage', 'dashboard'],
+      excludePatterns: config.excludePatterns ?? [],
     };
   }
 

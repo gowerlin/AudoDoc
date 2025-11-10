@@ -5,7 +5,7 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import { EventEmitter } from 'events';
-import { AIError } from '../error/error_types';
+import { AIServiceError } from '../error/error_types';
 
 export type PromptType = 'functionality' | 'steps' | 'ui_elements' | 'custom';
 
@@ -277,7 +277,7 @@ export class ClaudeVisionClient extends EventEmitter {
 
       this.emit('analysis_error', errorResult);
 
-      throw new AIError('Screenshot analysis failed', { error, context });
+      throw new AIServiceError('Screenshot analysis failed', { error, context });
     }
   }
 
