@@ -45,12 +45,12 @@ export class SnapshotStorage extends EventEmitter {
   constructor(config: StorageConfig) {
     super();
     this.config = {
-      compression: true,
-      compressionLevel: 6,
-      maxSnapshotSize: 1000, // 1GB default
-      autoCleanup: false,
-      retentionDays: 90,
       ...config,
+      compression: config.compression ?? true,
+      compressionLevel: config.compressionLevel ?? 6,
+      maxSnapshotSize: config.maxSnapshotSize ?? 1000, // 1GB default
+      autoCleanup: config.autoCleanup ?? false,
+      retentionDays: config.retentionDays ?? 90,
     };
     this.initializeStorage();
   }

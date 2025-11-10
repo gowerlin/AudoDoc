@@ -26,7 +26,7 @@ export class WebSocketClient {
   private reconnectAttempts: number = 0;
   private maxReconnectAttempts: number = 5;
   private reconnectDelay: number = 2000;
-  private heartbeatInterval: NodeJS.Timeout | null = null;
+  private heartbeatInterval: number | null = null;
   private messageHandlers: Map<MessageType, Array<(payload: any) => void>> = new Map();
   private statusCallback: ((status: ConnectionStatus) => void) | null = null;
 

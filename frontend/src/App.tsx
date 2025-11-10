@@ -3,7 +3,7 @@
  * Task 6: Frontend UI Integration
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppStore } from './store';
 import { wsClient } from './services/websocket';
 import { BrowserPreview } from './components/BrowserPreview';

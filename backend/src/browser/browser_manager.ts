@@ -26,13 +26,13 @@ export class BrowserManager {
 
   constructor(config: BrowserConfig) {
     this.config = {
-      headless: true,
-      viewport: {
+      ...config,
+      headless: config.headless ?? true,
+      viewport: config.viewport ?? {
         width: 1920,
         height: 1080,
       },
-      timeout: 30000,
-      ...config,
+      timeout: config.timeout ?? 30000,
     };
 
     // Initialize MCP connector

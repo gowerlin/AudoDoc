@@ -745,15 +745,15 @@ export class ErrorReporter extends EventEmitter {
 
     switch (format) {
       case ReportFormat.TEXT:
-        return report.exports.text || '';
+        return report.exports?.text || '';
       case ReportFormat.JSON:
-        return report.exports.json || '';
+        return report.exports?.json || '';
       case ReportFormat.HTML:
-        return report.exports.html || '';
+        return report.exports?.html || '';
       case ReportFormat.CSV:
-        return report.exports.csv || '';
+        return report.exports?.csv || '';
       case ReportFormat.MARKDOWN:
-        return report.exports.markdown || '';
+        return report.exports?.markdown || '';
       default:
         return '';
     }

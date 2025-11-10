@@ -26,10 +26,10 @@ export class MCPConnector extends EventEmitter {
   constructor(config: MCPConfig) {
     super();
     this.config = {
-      maxRetries: 3,
-      retryDelay: 2000,
-      heartbeatInterval: 30000,
       ...config,
+      maxRetries: config.maxRetries ?? 3,
+      retryDelay: config.retryDelay ?? 2000,
+      heartbeatInterval: config.heartbeatInterval ?? 30000,
     };
   }
 

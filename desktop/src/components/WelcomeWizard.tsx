@@ -1,10 +1,48 @@
 import { useState } from "react";
 import { Steps, Button, Form, Input, Select, message } from "antd";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 
 interface WelcomeWizardProps {
   onComplete: () => void;
+}
+
+interface AppConfig {
+  basic: {
+    app_name: string;
+    language: string;
+    auto_start: boolean;
+    minimize_to_tray: boolean;
+    check_updates: boolean;
+  };
+  auth: {
+    claude_api_key: string;
+    claude_model: string;
+    chrome_mcp_url: string;
+    chrome_mcp_port: number;
+  };
+  exploration: {
+    strategy: string;
+    max_depth: number;
+    max_pages: number;
+    screenshot_quality: string;
+    wait_for_network_idle: boolean;
+  };
+  storage: {
+    snapshot_storage_path: string;
+    screenshot_storage_path: string;
+    database_path: string;
+    enable_compression: boolean;
+    auto_cleanup: boolean;
+    retention_days: number;
+  };
+  advanced: {
+    log_level: string;
+    enable_telemetry: boolean;
+    concurrent_tabs: number;
+    api_rate_limit: number;
+    proxy_url?: string;
+  };
 }
 
 function WelcomeWizard({ onComplete }: WelcomeWizardProps) {
@@ -49,7 +87,7 @@ function WelcomeWizard({ onComplete }: WelcomeWizardProps) {
       const values = form.getFieldsValue();
 
       // 取得預設配置
-      const defaultConfig = await invoke("get_default_config");
+      const defaultConfig = await invoke<AppConfig>("get_default_config");
 
       // 合併用戶輸入的配置
       const config = {

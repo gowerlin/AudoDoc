@@ -33,7 +33,7 @@ export interface ProgressStats {
 }
 
 export interface ExplorationEvent {
-  type: 'page_explored' | 'page_started' | 'page_error' | 'exploration_complete' | 'progress_update';
+  type: 'page_explored' | 'page_started' | 'page_error' | 'exploration_complete' | 'progress_update' | 'tree_update';
   data: any;
   timestamp: Date;
 }

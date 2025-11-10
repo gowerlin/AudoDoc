@@ -6,7 +6,7 @@
 import { EventEmitter } from 'events';
 import * as crypto from 'crypto';
 import { CDPWrapper } from '../browser/cdp_wrapper';
-import * as pixelmatch from 'pixelmatch';
+import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 
 export interface DOMSnapshot {
@@ -107,7 +107,7 @@ export class ChangeDetector extends EventEmitter {
     try {
       // Navigate to URL
       await this.cdp.navigate(url);
-      await this.cdp.waitForPageReady();
+      // Wait handled by navigate()
 
       // Capture DOM snapshot
       const domSnapshot = await this.captureDOMSnapshot(url);
@@ -230,7 +230,7 @@ export class ChangeDetector extends EventEmitter {
 
     // Navigate to current state
     await this.cdp.navigate(url);
-    await this.cdp.waitForPageReady();
+    // Wait handled by navigate()
 
     // Capture current state
     const currentSnapshot = await this.captureDOMSnapshot(url);

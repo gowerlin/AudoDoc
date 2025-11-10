@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Tabs, Form, Button, message } from "antd";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import BasicSettingsTab from "./SettingsTabs/BasicSettingsTab";
 import AuthSettingsTab from "./SettingsTabs/AuthSettingsTab";
 import ExplorationSettingsTab from "./SettingsTabs/ExplorationSettingsTab";

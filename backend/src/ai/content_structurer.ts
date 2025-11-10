@@ -126,10 +126,11 @@ export class ContentStructurer extends EventEmitter {
   generateStepByStepGuide(
     title: string,
     actions: Array<{
+      stepNumber?: number;
       action: string;
       element: string;
       details: string;
-      screenshot?: Buffer;
+      screenshot?: any;
     }>,
     description?: string,
     options?: {
