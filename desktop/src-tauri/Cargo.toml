@@ -13,8 +13,12 @@ tauri-build = { version = "2.0", features = [] }
 [dependencies]
 tauri = { version = "2.0", features = [
   "updater",
-  "dialog-all",
-  "fs-all",
+  "dialog-open",
+  "dialog-save",
+  "fs-read-file",
+  "fs-write-file",
+  "fs-create-dir",
+  "fs-exists",
   "shell-sidecar",
   "system-tray",
   "protocol-asset",
@@ -29,3 +33,4 @@ anyhow = "1.0"
 log = "0.4"
 env_logger = "0.11"
 reqwest = { version = "0.12", features = ["blocking", "json"] }
+keyring = "2.3"

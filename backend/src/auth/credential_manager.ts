@@ -113,10 +113,14 @@ export class CredentialManager extends EventEmitter {
       iterations: 100000,
     };
 
-    // 生成或載入主密鑰
-    this.masterKey = this.deriveMasterKey(
-      encryptionKey || this.storageConfig.encryptionKey || 'default-key-change-me'
-    );
+    // 生成或載入主密鑰 - 必須提供加密密鑰
+    const key = encryptionKey || this.storageConfig.encryptionKey;
+    if (!key) {
+      throw new Error(
+        'Encryption key is required. Set ENCRYPTION_KEY environment variable or provide encryptionKey in StorageConfig.'
+      );
+    }
+    this.masterKey = this.deriveMasterKey(key);
 
     this.initialize();
   }
@@ -436,11 +440,27 @@ export class CredentialManager extends EventEmitter {
   async exportCredentials(outputPath: string): Promise<void> {
     console.log(`📤 Exporting credentials to: ${outputPath}`);
 
+    // Validate output path to prevent path traversal
+    const resolvedOutputPath = path.resolve(outputPath);
+    const allowedDirs = [
+      path.resolve(process.cwd()),
+      path.resolve(this.storageConfig.storageDir)
+    ];
+
+    // Check if output path is within allowed directories
+    const isAllowed = allowedDirs.some(dir => resolvedOutputPath.startsWith(dir));
+    if (!isAllowed) {
+      throw new Error(
+        'Export path must be within current working directory or storage directory. ' +
+        'This prevents writing to sensitive system locations.'
+      );
+    }
+
     const data = JSON.stringify(Array.from(this.credentials.entries()), null, 2);
-    await fs.writeFile(outputPath, data, 'utf8');
+    await fs.writeFile(resolvedOutputPath, data, 'utf8');
 
     console.log('⚠️  Warning: Exported credentials are NOT encrypted!');
-    this.emit('credentials_exported', { outputPath });
+    this.emit('credentials_exported', { outputPath: resolvedOutputPath });
   }
 
   /**
