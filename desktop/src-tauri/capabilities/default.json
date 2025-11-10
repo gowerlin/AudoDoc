@@ -5,6 +5,12 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
+    "core:window:allow-set-title",
+    "core:window:allow-close",
+    "dialog:default",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "fs:default",
     "fs:allow-read-text-file",
     "fs:allow-write-text-file",
     "fs:allow-read-dir",
@@ -13,9 +19,8 @@
     "fs:allow-exists",
     "fs:scope-app-data",
     "fs:scope-app-config",
-    "shell:allow-open",
-    "dialog:allow-open",
-    "dialog:allow-save",
-    "process:allow-exit"
+    "shell:default",
+    "shell:allow-execute",
+    "shell:allow-open"
   ]
 }

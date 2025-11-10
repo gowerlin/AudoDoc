@@ -11,19 +11,10 @@ edition = "2021"
 tauri-build = { version = "2.0", features = [] }
 
 [dependencies]
-tauri = { version = "2.0", features = [
-  "updater",
-  "dialog-open",
-  "dialog-save",
-  "fs-read-file",
-  "fs-write-file",
-  "fs-create-dir",
-  "fs-exists",
-  "shell-sidecar",
-  "system-tray",
-  "protocol-asset",
-  "http-request"
-] }
+tauri = { version = "2.0", features = [] }
+tauri-plugin-dialog = "2.0"
+tauri-plugin-fs = "2.0"
+tauri-plugin-shell = "2.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 confy = "0.6"

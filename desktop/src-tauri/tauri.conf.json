@@ -58,5 +58,17 @@
     ],
     "withGlobalTauri": false
   },
-  "plugins": {}
+  "plugins": {
+    "dialog": {},
+    "fs": {
+      "scope": [
+        "$APPDATA/AutoDoc/**",
+        "$HOME/.config/AutoDoc/**",
+        "$HOME/Library/Application Support/AutoDoc/**"
+      ]
+    },
+    "shell": {
+      "sidecar": true
+    }
+  }
 }
